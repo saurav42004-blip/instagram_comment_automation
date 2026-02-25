@@ -1,0 +1,866 @@
+{
+  "name": "Insta Comment Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "meta-ig",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -32,
+        96
+      ],
+      "id": "9db5c968-c994-43d6-96e3-acdcc62febbf",
+      "name": "Webhook",
+      "webhookId": "d1589887-fd3e-4593-bd19-d482b6278155"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "44a7ef9e-44ed-4f82-89ae-bfe92c421051",
+              "leftValue": "={{ $json.query['hub.mode'] }}",
+              "rightValue": "subscribe",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "7064ff07-dcd0-456f-a54f-eadb11c55a06",
+              "leftValue": "={{ $json.query['hub.verify_token'] }}",
+              "rightValue": "sktesting",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        96
+      ],
+      "id": "7ed99b96-3486-44e2-bdaf-00b07748582f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.query['hub.challenge'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        448,
+        64
+      ],
+      "id": "1077356b-d682-4b89-ae5d-47315ed84c04",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "##\n## Connection Establishment\n",
+        "height": 280,
+        "width": 780
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        -16
+      ],
+      "typeVersion": 1,
+      "id": "25b8cd91-0853-47a4-9f11-5bb64e761d1c",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f60eaa3-89c5-49d6-abc0-64f9e0208941",
+              "name": "myAccID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7dd9e2d8-2db1-4703-9ae2-e3f6daeccfa1",
+              "name": "fromID",
+              "value": "={{ $json.messaging[0].sender.id }}",
+              "type": "string"
+            },
+            {
+              "id": "919050df-abba-4eec-bd14-cd34327ea9f2",
+              "name": "commentText",
+              "value": "={{ $json.messaging[0].postback.payload }}{{ $json.messaging[0].message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        608
+      ],
+      "id": "e909ed43-70ee-4e12-bb49-62b8c911c2c6",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb4ebe59-2d73-412c-bbd7-79cb115c8299",
+              "leftValue": "={{ $json.myAccID }}",
+              "rightValue": "={{ $json.fromID }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "a68dcc55-ab7f-4b2c-9166-96a917a5e4f8",
+              "leftValue": "={{ $json.commentText.toLowerCase() }}",
+              "rightValue": "\\b(automation|agent|test|interested)\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        608
+      ],
+      "id": "239c4d9c-120e-4ecc-8dc9-fde7fd067045",
+      "name": "Filter2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e3298c84-1f9e-4f4b-a1c9-f203c4332769",
+              "leftValue": "={{ $json.commentText.toLowerCase() }}",
+              "rightValue": "\\b(done)\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1328,
+        608
+      ],
+      "id": "acaafa08-ac32-4d7f-9c5d-ad547d9fce59",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        608
+      ],
+      "id": "165de639-1406-4cc3-8984-0ebeb0f549ee",
+      "name": "Wait1",
+      "webhookId": "c7c2f6a7-4a4a-4841-b1d2-cefc161250dd"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4fbe5070-9b58-48ef-9535-c2723edb680b",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $json.messaging[0].sender.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "9f2ffac9-9607-438a-b52e-6899c256168a",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $json.changes[0].value.from.id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        352
+      ],
+      "id": "158c7d35-df08-4ebe-ba41-51c8fd827ac9",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "meta-ig",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -64,
+        352
+      ],
+      "id": "3900d17d-452d-4397-a821-31159ae8c827",
+      "name": "Webhook2",
+      "webhookId": "ee85b07d-f3b1-4d9c-b810-7c872a6f23fc"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "comments",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8ab372a3-ae22-4e05-9024-8ba19ddb6df9"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "comment"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c31a6685-7e10-4e75-9aaa-7dd49d071d14",
+                    "leftValue": "={{ $json.type }}",
+                    "rightValue": "messages",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "message"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        480,
+        352
+      ],
+      "id": "7cbcb5c3-d47d-47ca-b0f7-3d757823cf00",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1152,
+        144
+      ],
+      "id": "76dca6ef-b2e8-41db-a3fe-bcc0c37f4ab2",
+      "name": "Wait",
+      "webhookId": "c7c2f6a7-4a4a-4841-b1d2-cefc161250dd"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0f60eaa3-89c5-49d6-abc0-64f9e0208941",
+              "name": "myAccID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "7dd9e2d8-2db1-4703-9ae2-e3f6daeccfa1",
+              "name": "fromID",
+              "value": "={{ $json.changes[0].value.from.id }}",
+              "type": "string"
+            },
+            {
+              "id": "5acaca0b-5cfa-4c22-8301-11ee6a2872a7",
+              "name": "fromUsername",
+              "value": "={{ $json.changes[0].value.from.username }}",
+              "type": "string"
+            },
+            {
+              "id": "4162c42a-e881-415e-996b-c0e130f1ab1b",
+              "name": "mediaID",
+              "value": "={{ $json.changes[0].value.media.id }}",
+              "type": "string"
+            },
+            {
+              "id": "0f0fd828-582a-4615-8d6f-2c0ac9f71b41",
+              "name": "commentID",
+              "value": "={{ $json.changes[0].value.id }}",
+              "type": "string"
+            },
+            {
+              "id": "919050df-abba-4eec-bd14-cd34327ea9f2",
+              "name": "commentText",
+              "value": "={{ $json.changes[0].value.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        784,
+        144
+      ],
+      "id": "d7b09fac-1c04-4c37-84da-162a79fb7488",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb4ebe59-2d73-412c-bbd7-79cb115c8299",
+              "leftValue": "={{ $json.myAccID }}",
+              "rightValue": "={{ $json.fromID }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            },
+            {
+              "id": "a68dcc55-ab7f-4b2c-9166-96a917a5e4f8",
+              "leftValue": "={{ $json.commentText.toLowerCase() }}",
+              "rightValue": "\\b(automation|agent|test|interested)\\b",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        144
+      ],
+      "id": "764922a0-9a2e-47c6-a059-b2aaddb547bb",
+      "name": "Filter3"
+    },
+    {
+      "parameters": {
+        "content": "\nThis deals with an incoming comment on a media post. It renames the fields and prevents infinite looping through Filter.\nThe first http node replies to the made comment while 2nd nodes send a dm message for following the account.",
+        "height": 244,
+        "width": 1024,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        704,
+        80
+      ],
+      "typeVersion": 1,
+      "id": "245fce6f-3d33-43a7-95e6-8a3d0e3006c9",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\nThis deals with filtering out the keyword from the dm and replying with button-type message.\n",
+        "height": 240,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        384
+      ],
+      "typeVersion": 1,
+      "id": "10b57f5e-0e6a-451a-9dc5-15e4c46b0319",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "This checks upon the keyword specific link and sends it over dm.\n",
+        "height": 228,
+        "width": 480,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1536,
+        672
+      ],
+      "typeVersion": 1,
+      "id": "7c160348-ae87-449d-a7ba-df8778e43998",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const entry = $input.first().json.body.entry[0];\nlet type = 'unknown';\n\nif (entry.messaging) {\n    type = 'messages';\n} else if (entry.changes) {\n    type = 'comments';\n}\n\nreturn [{ json: { ...$input.first().json.body.entry[0], type } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        352
+      ],
+      "id": "47dacc67-54c0-4530-ab8d-769e428fd4ce",
+      "name": "Classify Event Type"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v23.0/{{ $('Filter3').item.json.commentID }}/replies",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "Check your dm!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1328,
+        144
+      ],
+      "id": "b870ac0a-e859-43e2-9507-bd1bc92fe14e",
+      "name": "Comment Reply",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Sq9N5187UymxdWD0",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.instagram.com/v23.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"comment_id\": \"{{ $('Filter3').item.json.commentID }}\"\n  },\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"button\",\n        \"text\": \"Please visit my profile to follow me before I send the link for the material 😊\\n\\nClick on \\\"Done Following\\\" once you follow me!\",\n        \"buttons\": [\n          {\n            \"type\": \"web_url\",\n            \"url\": \"https://www.instagram.com/deep_ai294\",\n            \"title\": \"Go to Profile\"\n          },\n          {\n            \"type\": \"postback\",\n            \"title\": \"Done Following\",\n            \"payload\": \"DONE {{ $('Filter3').item.json.commentText }}\"\n          }\n        ]\n      }\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1504,
+        144
+      ],
+      "id": "b6b8bd68-5980-41e1-a56a-69f202a1b79f",
+      "name": "Send DM",
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Sq9N5187UymxdWD0",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.instagram.com/v23.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"recipient\": {\n    \"id\": \"{{ $json.fromID }}\"\n  },\n  \"message\": {\n    \"attachment\": {\n      \"type\": \"template\",\n      \"payload\": {\n        \"template_type\": \"button\",\n        \"text\": \"Thank you for folllowing me and showing your interest. You may now click below to get the material link!\",\n        \"buttons\": [\n          {\n            \"type\": \"postback\",\n            \"title\": \"Send me the Link\",\n            \"payload\": \"{{ $json.commentText }} LINK\"\n          }\n        ]\n      }\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        464
+      ],
+      "id": "e2d4beaf-cf93-431c-8a7d-bfd889858171",
+      "name": "Send DM 2",
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Sq9N5187UymxdWD0",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.instagram.com/v23.0/me/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "recipient.id",
+              "value": "={{ $('Filter2').item.json.fromID }}"
+            },
+            {
+              "name": "message.text",
+              "value": "={{ $json.responseMessage }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1792,
+        736
+      ],
+      "id": "b38e49b4-166a-4f62-882c-a812f2f23162",
+      "name": "Send Reqd. Material",
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Sq9N5187UymxdWD0",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const comment = $input.first().json.commentText.toLowerCase();\n\nconst keywordMap = {\n  automation: \"Follow Up Below Link 👇 \\n(Automation) \\n\\n .....\",\n  agent: \"Follow Up Below Link 👇 \\n(Agent) \\n\\n .....\",\n  test: \"Follow Up Below Link 👇 \\n(Test) \\n\\n .....\",\n  interested: \"Follow Up Below Link 👇 \\n(Interested) \\n\\n .....\"\n};\n\nfor (const [keyword, message] of Object.entries(keywordMap)) {\n  if (comment.includes(keyword)) {\n    return [{ json: { responseMessage: message } }];\n  }\n}\n\nreturn [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        736
+      ],
+      "id": "28cc9f95-1972-4b8d-9184-6e95ea849c96",
+      "name": "Assignment of Material"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Define your keywords (case-insensitive match)\nconst keywords = [\"Automation\", \"Agent\", \"Test\", \"Interested\"];\n\nreturn items.map(item => {\n  const text = item.json.commentText || \"\";\n\n  // Find keywords in the text\n  const foundKeywords = keywords.filter(k => \n    new RegExp(`\\\\b${k}\\\\b`, \"i\").test(text)\n  );\n\n  // Keep only the first matched keyword, or empty if none\n  item.json.commentText = foundKeywords.length > 0 ? foundKeywords[0] : \"\";\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1616,
+        464
+      ],
+      "id": "a6386d8d-5acc-47c0-b23f-f61a37be16e1",
+      "name": "Extract Keyword"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Filter2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter2": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Extract Keyword",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Assignment of Material",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Classify Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Comment Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Filter3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter3": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Event Type": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comment Reply": {
+      "main": [
+        [
+          {
+            "node": "Send DM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assignment of Material": {
+      "main": [
+        [
+          {
+            "node": "Send Reqd. Material",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Keyword": {
+      "main": [
+        [
+          {
+            "node": "Send DM 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b86a322f-caa9-4751-a175-f72c75a0aeb1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f14d3f6aadafb81a1b082b9abf757f71dd698f6c95bf99d6400d479fc40bb519"
+  },
+  "id": "95zw4od3Q2IroQ2X",
+  "tags": []
+}
